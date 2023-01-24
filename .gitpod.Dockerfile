@@ -1,10 +1,10 @@
 FROM ghcr.io/nicholasclark/devenv:rstudio-latest
 
 # Install base utilities
-RUN sudo apt-get update && \
-    sudo apt-get install -y build-essentials wget python3 && \
-    sudo apt-get clean && \
-    sudo rm -rf /var/lib/apt/lists/*
+RUN sudo apt-get update
+RUN sudo apt-get install -y build-essentials wget python3
+RUN sudo apt-get clean
+RUN sudo rm -rf /var/lib/apt/lists/*
 
 # Install miniconda
 ENV CONDA_DIR /opt/conda
