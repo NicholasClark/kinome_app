@@ -1,6 +1,4 @@
-FROM rocker/rstudio:4.0.3
-
-#ghcr.io/nicholasclark/devenv:rstudio-latest
+FROM ghcr.io/nicholasclark/devenv:rstudio-latest
 
 RUN sudo R -e 'install.packages("remotes", repos = "http://cran.us.r-project.org")'
 RUN sudo R -e 'remotes::install_cran("languageserver")'
