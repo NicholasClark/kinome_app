@@ -14,9 +14,7 @@ RUN sudo R -e 'remotes::install_cran("magrittr")'
 
 # Install base utilities
 RUN sudo apt-get update && \
-    apt-get install -y build-essentials  && \
-    apt-get install -y wget && \
-    apt-get install python3 && \
+    apt-get install -y build-essentials wget python3 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
