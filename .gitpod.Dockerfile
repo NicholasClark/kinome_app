@@ -1,4 +1,4 @@
-FROM gitpod/workspace-full
+FROM ghcr.io/nicholasclark/devenv:rstudio-latest
 
 USER gitpod
 RUN brew install R

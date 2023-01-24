@@ -9,9 +9,7 @@ get_synapse_credentials = function() {
 ### Download synapse folder
 download_synapse_data = function() {
   syn_cred = get_synapse_credentials()
-  cmd1 = paste0("synapse -p ", syn_cred, " get -r syn50909160", sep = "")
+  cmd1 = paste0("cd data; synapse -p ", syn_cred, " get -r syn50909160", sep = "")
   system("pip install synapseclient")
   system(cmd1)
 }
-
-
