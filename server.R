@@ -7,6 +7,7 @@ library(here)
 library(Rpdb)
 library(bio3d)
 library(magrittr)
+library(InteractiveComplexHeatmap)
 
 ### define helper functions
 source("helper_funs.R")
@@ -58,5 +59,7 @@ server <- function(input, output, session) {
 	
 	output$align_3d = renderR3dmol(align_kinases(input$kinase_align1, input$kinase_align2))
 	
-
+	#tm_max_mat_react = reactive(tm_max_mat)
+	
+	makeInteractiveComplexHeatmap(input, output, session, Heatmap(tm_max_mat[1:20,1:20]) %>% draw(), "heatmap")
 }

@@ -1,5 +1,6 @@
 #### Helper functions
 
+meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
 
 ### Get synapse credentials
 get_synapse_credentials = function() {
@@ -18,16 +19,18 @@ download_synapse_data = function() {
 
 ### Convert uniprot names to symbols ("nice" versions w/ residue numbers)
 convert_uniprot_to_symbol_nice = function(uniprot) {
-	meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
+	#meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
 	meta$symbol_nice[ match(uniprot, meta$uniprot_name_nice) ]
 }
 
 
 get_uniprot_id_from_symbol = function(symbol) {
+	#meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
 	id = meta$`Uniprot Entry`[which(meta$HGNC_Symbol == symbol)]
 	return(id)
 }
 af_file_from_symbol = function(symbol) {
+	#meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
 	id = meta$`Uniprot Entry`[which(meta$HGNC_Symbol == symbol)]
 	file = paste0("AF-", id, "-F1-model_v4.pdb", sep = "")
 	return(file)
