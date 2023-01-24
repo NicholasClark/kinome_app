@@ -14,5 +14,7 @@ ui <- fluidPage(
 	textOutput("text1"),
 	#textOutput("text2"),
 	dataTableOutput('test1'),
-	dataTableOutput('test2')
+	dataTableOutput('test2'),
+	#textOutput("similar_text")
+	uiOutput("ui_text")
 )
