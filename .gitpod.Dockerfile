@@ -14,9 +14,9 @@ RUN sudo wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linu
 # Put conda in path so we can use conda activate
 ENV PATH=$CONDA_DIR/bin:$PATH
 
-RUN sudo conda init
+RUN sudo conda init bash
 # Install Mamba
-RUN sudo conda install mamba -n base -c conda-forge
+RUN sudo /bin/bash conda install mamba -n base -c conda-forge
 
 # Install Bioconductor packages
 RUN sudo R -e "install.packages('BiocManager', repos = 'https://mran.microsoft.com/snapshot/2023-01-23')"
