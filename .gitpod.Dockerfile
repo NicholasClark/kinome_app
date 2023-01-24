@@ -13,10 +13,10 @@ RUN sudo R -e 'remotes::install_cran("bio3d", dependencies=TRUE)'
 RUN sudo R -e 'remotes::install_cran("magrittr")'
 
 # Install base utilities
-RUN apt-get update && \
+RUN sudo apt-get update && \
     apt-get install -y build-essentials  && \
-    apt-get install -y wget &&
-    apt-get install python3 &&
+    apt-get install -y wget && \
+    apt-get install python3 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -29,4 +29,4 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
 ENV PATH=$CONDA_DIR/bin:$PATH
 
 # Install Mamba
-RUN conda install mamba -n base -c conda-forge
+RUN sudo conda install mamba -n base -c conda-forge
