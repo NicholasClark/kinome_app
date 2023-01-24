@@ -14,6 +14,7 @@ RUN sudo wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linu
 # Put conda in path so we can use conda activate
 ENV PATH=$CONDA_DIR/bin:$PATH
 
+RUN sudo conda init
 # Install Mamba
 RUN sudo conda install mamba -n base -c conda-forge
 
