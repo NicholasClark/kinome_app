@@ -19,21 +19,21 @@ ENV PATH=$CONDA_DIR/bin:$PATH
 #RUN sudo /bin/bash conda install mamba -n base -c conda-forge
 
 # Install Bioconductor packages
-RUN sudo R -e "install.packages('BiocManager', repos = 'https://mran.microsoft.com/snapshot/2023-01-23')"
-RUN sudo R -e "BiocManager::install('ComplexHeatmap')"
-RUN sudo R -e "BiocManager::install('InteractiveComplexHeatmap')"
+#RUN sudo R -e "install.packages('BiocManager', repos = 'https://mran.microsoft.com/snapshot/2023-01-23')"
+#RUN sudo R -e "BiocManager::install('ComplexHeatmap')"
+#RUN sudo R -e "BiocManager::install('InteractiveComplexHeatmap')"
 
 # Install R packages from CRAN
-RUN sudo R -e 'install.packages("remotes", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
-RUN sudo R -e 'remotes::install_cran("languageserver", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
-RUN sudo R -e 'remotes::install_cran("attempt", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
-RUN sudo R -e 'remotes::install_cran("dockerfiler", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
-RUN sudo R -e 'remotes::install_cran("devtools", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
-RUN sudo R -e 'remotes::install_cran("tidyverse", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
-RUN sudo R -e 'remotes::install_cran("here", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
-RUN sudo R -e 'remotes::install_cran("r3dmol", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
-RUN sudo R -e 'remotes::install_cran("Rpdb", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
-RUN sudo R -e 'remotes::install_cran("bio3d", dependencies=TRUE, repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
-RUN sudo R -e 'remotes::install_cran("magrittr", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+#RUN sudo R -e 'install.packages("remotes", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+#RUN sudo R -e 'remotes::install_cran("languageserver", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+#RUN sudo R -e 'remotes::install_cran("attempt", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+#RUN sudo R -e 'remotes::install_cran("dockerfiler", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+#RUN sudo R -e 'remotes::install_cran("devtools", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+#RUN sudo R -e 'remotes::install_cran("tidyverse", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+#RUN sudo R -e 'remotes::install_cran("here", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+#RUN sudo R -e 'remotes::install_cran("r3dmol", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+#RUN sudo R -e 'remotes::install_cran("Rpdb", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+#RUN sudo R -e 'remotes::install_cran("bio3d", dependencies=TRUE, repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+#RUN sudo R -e 'remotes::install_cran("magrittr", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
 
 #RUN sudo pip install synapseclient
