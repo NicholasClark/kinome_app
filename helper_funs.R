@@ -4,22 +4,58 @@ library(readr)
 meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
 
 ### Convert uniprot names to symbols ("nice" versions w/ residue numbers)
+# input: uniprot_name_nice
+# output: symbol_nice
 convert_uniprot_to_symbol_nice = function(uniprot) {
 	#meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
 	meta$symbol_nice[ match(uniprot, meta$uniprot_name_nice) ]
 }
 
+### Get uniprot name from symbol
+# input: symbol_nice
+# output: uniprot_name_nice
+get_uniprot_name_nice_from_symbol = function(symbol) {
+	#meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
+	uni = meta$uniprot_name_nice[which(meta$symbol_nice == symbol)]
+	return(uni)
+}
 
 get_uniprot_id_from_symbol = function(symbol) {
 	#meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
 	id = meta$`Uniprot Entry`[which(meta$HGNC_Symbol == symbol)]
 	return(id)
 }
-af_file_from_symbol = function(symbol) {
-	#meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
+
+### look up filename from symbol -- for files from AF2 database
+af_db_file_from_symbol = function(symbol) {
+	dir = file.path("data", "protein_structures", "AlphaFold", "full_proteins", "v4")
 	id = meta$`Uniprot Entry`[which(meta$HGNC_Symbol == symbol)]
 	file = paste0("AF-", id, "-F1-model_v4.pdb", sep = "")
-	return(file)
+	full_file = file.path(dir, file)
+	return(full_file)
+}
+
+### look up filename from symbol -- for files manually generated from AF2
+# input: symbol_nice
+# output: pdb file name (manually generated files)
+af_manual_file_from_symbol = function(symbol) {
+	dir = file.path("data", "protein_structures", "AlphaFold", "kinase_domains")
+	uni = get_uniprot_name_nice_from_symbol(symbol)
+	file = paste0(uni, ".pdb", sep = "")
+	full_file = file.path(dir, file)
+	return(full_file)
+}
+
+af_file_from_symbol = function(symbol) {
+	file_db = af_db_file_from_symbol(symbol)
+	file_manual = af_manual_file_from_symbol(symbol)
+	if(file.exists(file_db)) {
+		return(file_db)
+	} else if(file.exists(file_manual)) {
+		return(file_manual)
+	} else {
+		stop("File not found")
+	}
 }
 
 align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "red") {
@@ -34,9 +70,12 @@ align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "red") {
 	#get_uniprot_id_from_symbol("RIOK2") #Q9BVS4
 	#get_uniprot_id_from_symbol("RIOK3") #O14730
 	
-	af_v4_dir = file.path("data", "protein_structures", "AlphaFold", "full_proteins", "v4")
-	pdb1_file = file.path(af_v4_dir, af_file_from_symbol(gene1))
-	pdb2_file = file.path(af_v4_dir, af_file_from_symbol(gene2))
+	# af_v4_dir = file.path("data", "protein_structures", "AlphaFold", "full_proteins", "v4")
+	# pdb1_file = file.path(af_v4_dir, af_file_from_symbol(gene1))
+	# pdb2_file = file.path(af_v4_dir, af_file_from_symbol(gene2))
+	pdb1_file = af_file_from_symbol(gene1)
+	pdb2_file = af_file_from_symbol(gene2)
+	
 	
 	pdb1 = Rpdb::read.pdb( pdb1_file )
 	pdb2 = Rpdb::read.pdb( pdb2_file )
@@ -60,8 +99,24 @@ align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "red") {
 	
 	ff1_sub = paste0(gene1, "_sub", ".pdb", sep = "")
 	ff2_sub = paste0(gene2, "_sub", ".pdb", sep = "")
-	pdb1_sub = trim.pdb(pdb1, inds = atom.select(pdb1, resno = start1:end1))
-	pdb2_sub = trim.pdb(pdb2, inds = atom.select(pdb2, resno = start2:end2))
+	
+	### Trim pdb files
+	is_gene1_from_db = file.exists(af_db_file_from_symbol(gene1))
+	is_gene2_from_db = file.exists(af_db_file_from_symbol(gene2))
+	pdb1_sub = pdb1
+	if(is_gene1_from_db) {
+		domain_annot1_exists = !(is.na(start1) || is.na(end1))
+		if(domain_annot1_exists) {
+			pdb1_sub = trim.pdb(pdb1, inds = atom.select(pdb1, resno = start1:end1))
+		}
+	}
+	pdb2_sub = pdb2
+	if(is_gene2_from_db) {
+		domain_annot2_exists = !(is.na(start2) || is.na(end2))
+		if(domain_annot2_exists) {
+			pdb2_sub = trim.pdb(pdb2, inds = atom.select(pdb2, resno = start2:end2))
+		}
+	}
 	bio3d::write.pdb(pdb1_sub, file = ff1_sub)
 	bio3d::write.pdb(pdb2_sub, file = ff2_sub)
 	
