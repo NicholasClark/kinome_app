@@ -82,8 +82,8 @@ align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "red") {
 	### rotate and translate pdb
 	pdb1_rot = pdb1 %>% Rz(tmp_df$z_angle) %>%  Ry(tmp_df$y_angle) %>% Rx(tmp_df$x_angle)  %>% Txyz(x = tmp_df$xt, y = tmp_df$yt, z = tmp_df$zt)
 	### write temporary file
-	ff1 = paste0(gene1, ".pdb", sep = "")
-	ff2 = paste0(gene2, ".pdb", sep = "")
+	ff1 = file.path(tempdir(), paste0(gene1, ".pdb", sep = ""))
+	ff2 = file.path(tempdir(), paste0(gene2, ".pdb", sep = ""))
 	Rpdb::write.pdb(pdb1_rot, file = ff1)
 	
 	### trim the pdb with bio3d
@@ -97,8 +97,8 @@ align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "red") {
 	# get start and stop indices (for manually-created AF2 structure)
 	####### fill in later
 	
-	ff1_sub = paste0(gene1, "_sub", ".pdb", sep = "")
-	ff2_sub = paste0(gene2, "_sub", ".pdb", sep = "")
+	ff1_sub = file.path(tempdir(), paste0(gene1, "_sub", ".pdb", sep = ""))
+	ff2_sub = file.path(tempdir(), paste0(gene2, "_sub", ".pdb", sep = ""))
 	
 	### Trim pdb files
 	is_gene1_from_db = file.exists(af_db_file_from_symbol(gene1))
