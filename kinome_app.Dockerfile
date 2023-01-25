@@ -6,21 +6,6 @@ RUN sudo apt-get update && \
 RUN sudo apt-get clean
 RUN sudo rm -rf /var/lib/apt/lists/*
 
-# Install synapse client
-#RUN sudo pip install synapseclient
-
-# Install miniconda
-#ENV CONDA_DIR /opt/conda
-#RUN sudo wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-#     sudo /bin/bash ~/miniconda.sh -b -p /opt/conda
-
-# Put conda in path so we can use conda activate
-#ENV PATH=$CONDA_DIR/bin:$PATH
-
-#RUN sudo conda init bash
-# Install Mamba
-#RUN sudo /bin/bash conda install mamba -n base -c conda-forge
-
 # Install Bioconductor packages
 RUN sudo R -e "install.packages('BiocManager', repos = 'https://mran.microsoft.com/snapshot/2023-01-23')"
 RUN sudo R -e "BiocManager::install('ComplexHeatmap')"
@@ -39,3 +24,6 @@ RUN sudo R -e 'remotes::install_cran("r3dmol", repos = "https://mran.microsoft.c
 RUN sudo R -e 'remotes::install_cran("Rpdb", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
 RUN sudo R -e 'remotes::install_cran("bio3d", dependencies=TRUE, repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
 RUN sudo R -e 'remotes::install_cran("magrittr", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+RUN sudo R -e 'remotes::install_cran("rsconnect", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+RUN sudo R -e 'remotes::install_cran("renv", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
+
