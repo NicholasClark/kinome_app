@@ -7,7 +7,7 @@ on:
       - main
     paths:
       - '*.Dockerfile'
-      - .gitpod.yml
+      - .github/workflows/build.yml
 
 env:
   REGISTRY: ghcr.io
