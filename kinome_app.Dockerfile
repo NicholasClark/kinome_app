@@ -2,7 +2,7 @@ FROM ghcr.io/nicholasclark/devenv:rstudio-latest
 
 # Install base utilities
 RUN sudo apt-get update && \
-     sudo apt-get install -y build-essential wget python3 pip synapseclient
+     sudo apt-get install -y build-essential wget python3 pip
 RUN sudo apt-get clean
 RUN sudo rm -rf /var/lib/apt/lists/*
 
