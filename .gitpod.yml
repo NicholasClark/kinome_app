@@ -1,5 +1,5 @@
 image:
-  file: kinome_app.Dockerfile
+  file: rstudio.Dockerfile
 ports:
   - port: 8787
     onOpen: open-preview

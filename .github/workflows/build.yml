@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - '*.Dockerfile'
+      - 'kinome_app.Dockerfile'
       - .github/workflows/build.yml
 
 env:
