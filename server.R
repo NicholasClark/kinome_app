@@ -7,6 +7,7 @@ library(here)
 library(Rpdb)
 library(bio3d)
 library(magrittr)
+library(BiocManager)
 library(ComplexHeatmap)
 library(InteractiveComplexHeatmap)
 
