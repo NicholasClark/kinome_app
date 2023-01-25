@@ -36,4 +36,4 @@ RUN sudo R -e 'remotes::install_cran("Rpdb", repos = "https://mran.microsoft.com
 RUN sudo R -e 'remotes::install_cran("bio3d", dependencies=TRUE, repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
 RUN sudo R -e 'remotes::install_cran("magrittr", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
 
-RUN sudo pip install synapseclient
+#RUN sudo pip install synapseclient
