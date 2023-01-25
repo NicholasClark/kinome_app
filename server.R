@@ -38,7 +38,7 @@ server <- function(input, output, session) {
 	})
 	
 	#### Text outputs for most similar kinases
-	output$text1 = renderText({paste("You have selected", input$kinase_align1)})
+	#output$text1 = renderText({paste("You have selected", input$kinase_align1)})
 	similar_text1 = reactive(paste("Most similar kinases to ", input$kinase_align1))
 	similar_text2 = reactive({
 		tmp_text = ""
@@ -63,5 +63,7 @@ server <- function(input, output, session) {
 	
 	#tm_max_mat_react = reactive(tm_max_mat)
 	
-	makeInteractiveComplexHeatmap(input, output, session, Heatmap(tm_max_mat[1:20,1:20]) %>% draw(), "heatmap")
+	callModule(mod_heatmap_server, id = "heatmap1", data = tm_max_mat[1:20,1:20])
+	
+	#makeInteractiveComplexHeatmap(input, output, session, Heatmap(tm_max_mat[1:20,1:20]) %>% draw(), "heatmap")
 }
