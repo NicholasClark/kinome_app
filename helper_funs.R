@@ -2,21 +2,6 @@
 
 meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
 
-### Get synapse credentials
-get_synapse_credentials = function() {
-  readLines("synapse_auth")
-}
-
-### Download synapse folder
-download_synapse_data = function() {
-  syn_cred = get_synapse_credentials()
-  if(!file.exists("data")) {
-  	cmd1 = paste0("cd data; synapse -p ", syn_cred, " get -r syn50909160", sep = "")
-  	system("pip install synapseclient")
-  	system(cmd1)
-  }
-}
-
 ### Convert uniprot names to symbols ("nice" versions w/ residue numbers)
 convert_uniprot_to_symbol_nice = function(uniprot) {
 	#meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
