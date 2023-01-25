@@ -1,4 +1,5 @@
 #### Helper functions
+library(readr)
 
 meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
 

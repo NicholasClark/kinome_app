@@ -7,6 +7,7 @@ library(here)
 library(Rpdb)
 library(bio3d)
 library(magrittr)
+library(ComplexHeatmap)
 library(InteractiveComplexHeatmap)
 
 ### define helper functions
