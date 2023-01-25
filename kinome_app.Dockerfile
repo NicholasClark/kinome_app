@@ -7,7 +7,7 @@ RUN sudo apt-get clean
 RUN sudo rm -rf /var/lib/apt/lists/*
 
 # Install synapse client
-RUN sudo pip install synapseclient
+#RUN sudo pip install synapseclient
 
 # Install miniconda
 #ENV CONDA_DIR /opt/conda
