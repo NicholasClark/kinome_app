@@ -6,13 +6,16 @@ RUN sudo apt-get update && \
 RUN sudo apt-get clean
 RUN sudo rm -rf /var/lib/apt/lists/*
 
+# Install synapse client
+RUN sudo pip install synapseclient
+
 # Install miniconda
-ENV CONDA_DIR /opt/conda
-RUN sudo wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-     sudo /bin/bash ~/miniconda.sh -b -p /opt/conda
+#ENV CONDA_DIR /opt/conda
+#RUN sudo wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+#     sudo /bin/bash ~/miniconda.sh -b -p /opt/conda
 
 # Put conda in path so we can use conda activate
-ENV PATH=$CONDA_DIR/bin:$PATH
+#ENV PATH=$CONDA_DIR/bin:$PATH
 
 #RUN sudo conda init bash
 # Install Mamba
@@ -36,4 +39,3 @@ ENV PATH=$CONDA_DIR/bin:$PATH
 #RUN sudo R -e 'remotes::install_cran("bio3d", dependencies=TRUE, repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
 #RUN sudo R -e 'remotes::install_cran("magrittr", repos = "https://mran.microsoft.com/snapshot/2023-01-23")'
 
-#RUN sudo pip install synapseclient
