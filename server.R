@@ -13,18 +13,10 @@ library(InteractiveComplexHeatmap)
 
 ### define helper functions
 source("helper_funs.R")
+source("load_data.R")
 
 server <- function(input, output, session) {
-	### read in data
-	meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
-	tm_df = read_parquet("data/TM_data_full.parquet")
-	tm_max_df = read_parquet("data/TM_max_df.parquet")
-	tm_max_mat = tm_max_df %>% as.data.frame() %>% column_to_rownames("row_names") %>% as.matrix()
-	### convert row/colnames
-	rownames(tm_max_mat) = convert_uniprot_to_symbol_nice(rownames(tm_max_mat))
-	colnames(tm_max_mat) = convert_uniprot_to_symbol_nice(colnames(tm_max_mat))
 	
-	tm_max_df = tm_max_mat %>% as.data.frame() %>% rownames_to_column("row_names")
 	tm_max_data = reactive(tm_max_df)
 	
 	#### TM-max matrix/data table output
@@ -63,7 +55,7 @@ server <- function(input, output, session) {
 	
 	#tm_max_mat_react = reactive(tm_max_mat)
 	
-	callModule(mod_heatmap_server, id = "heatmap1", data = tm_max_mat[1:20,1:20])
+	#callModule(mod_heatmap_server, id = "heatmap1", ht = Heatmap(tm_max_mat[1:20,1:20]))
 	
-	#makeInteractiveComplexHeatmap(input, output, session, Heatmap(tm_max_mat[1:20,1:20]) %>% draw(), "heatmap")
+	makeInteractiveComplexHeatmap(input, output, session, Heatmap(tm_max_mat[1:20,1:20]) %>% draw(), "heatmap")
 }

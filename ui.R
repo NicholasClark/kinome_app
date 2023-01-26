@@ -16,7 +16,7 @@ ui <- fluidPage(
 	#dataTableOutput('tm_max_dt'),
 	#dataTableOutput('similar_dt'),
 	uiOutput("ui_text"),
-	#InteractiveComplexHeatmapOutput("heatmap"),
-	mod_heatmap_ui("heatmap1"),
+	InteractiveComplexHeatmapOutput("heatmap"),
+	#mod_heatmap_ui("heatmap1"),
 	r3dmolOutput("align_3d")
 )
