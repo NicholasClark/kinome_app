@@ -1,15 +1,4 @@
-library(tidyverse)
-library(readr)
-library(tibble)
-library(arrow)
-library(r3dmol)
-library(here)
-library(Rpdb)
-library(bio3d)
-library(magrittr)
-library(BiocManager)
-library(ComplexHeatmap)
-library(InteractiveComplexHeatmap)
+
 
 
 server <- function(input, output, session) {
