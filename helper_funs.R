@@ -1,7 +1,4 @@
 #### Helper functions
-library(readr)
-
-#meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
 
 ### Convert uniprot names to symbols ("nice" versions w/ residue numbers)
 # input: uniprot_name_nice
@@ -67,20 +64,16 @@ align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "red") {
 	tm2 = tm_df %>% filter(kinase1 == gene2, kinase2 == gene1) %>% extract2("tm_score")
 	print(tm1)
 	print(tm2)
-	#get_uniprot_id_from_symbol("RIOK2") #Q9BVS4
-	#get_uniprot_id_from_symbol("RIOK3") #O14730
-	
-	# af_v4_dir = file.path("data", "protein_structures", "AlphaFold", "full_proteins", "v4")
-	# pdb1_file = file.path(af_v4_dir, af_file_from_symbol(gene1))
-	# pdb2_file = file.path(af_v4_dir, af_file_from_symbol(gene2))
+
 	pdb1_file = af_file_from_symbol(gene1)
 	pdb2_file = af_file_from_symbol(gene2)
 	
-	
 	pdb1 = Rpdb::read.pdb( pdb1_file )
 	pdb2 = Rpdb::read.pdb( pdb2_file )
+	
 	### rotate and translate pdb
 	pdb1_rot = pdb1 %>% Rz(tmp_df$z_angle) %>%  Ry(tmp_df$y_angle) %>% Rx(tmp_df$x_angle)  %>% Txyz(x = tmp_df$xt, y = tmp_df$yt, z = tmp_df$zt)
+	
 	### write temporary file
 	ff1 = file.path(tempdir(), paste0(gene1, ".pdb", sep = ""))
 	ff2 = file.path(tempdir(), paste0(gene2, ".pdb", sep = ""))
@@ -94,8 +87,6 @@ align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "red") {
 	end1 = meta %>% filter(symbol_nice == gene1) %>% extract2("DomainEnd")
 	start2 = meta %>% filter(symbol_nice == gene2) %>% extract2("DomainStart")
 	end2 = meta %>% filter(symbol_nice == gene2) %>% extract2("DomainEnd")
-	# get start and stop indices (for manually-created AF2 structure)
-	####### fill in later
 	
 	ff1_sub = file.path(tempdir(), paste0(gene1, "_sub", ".pdb", sep = ""))
 	ff2_sub = file.path(tempdir(), paste0(gene2, "_sub", ".pdb", sep = ""))

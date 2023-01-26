@@ -1,6 +1,6 @@
 ### Script for downloading data
 
-### Get synapse credentials
+### Get synapse credentials -- keep personal token in a text file named "synapse_auth"
 get_synapse_credentials = function() {
 	readLines("synapse_auth")
 }
