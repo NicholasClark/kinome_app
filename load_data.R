@@ -8,3 +8,5 @@ tm_max_mat = tm_max_df %>% as.data.frame() %>% column_to_rownames("row_names") %
 rownames(tm_max_mat) = convert_uniprot_to_symbol_nice(rownames(tm_max_mat))
 colnames(tm_max_mat) = convert_uniprot_to_symbol_nice(colnames(tm_max_mat))
 tm_max_df = tm_max_mat %>% as.data.frame() %>% rownames_to_column("row_names")
+
+tm_max_data = reactive(tm_max_df)

@@ -1,1 +1,1 @@
-source("modules/mod_heatmap.R", local = TRUE)
+source("modules/similar_structures_mod.R", local = TRUE)
