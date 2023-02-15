@@ -55,7 +55,7 @@ af_file_from_symbol = function(symbol) {
 	}
 }
 
-align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "red") {
+align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "yellow", domain_only = F) {
 	tm_df = read_parquet("data/TM_data_full.parquet")
 	meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
 	tmp_df = tm_df %>% filter(kinase1 == gene1, kinase2 == gene2)
@@ -79,43 +79,48 @@ align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "red") {
 	ff2 = file.path(tempdir(), paste0(gene2, ".pdb", sep = ""))
 	Rpdb::write.pdb(pdb1_rot, file = ff1)
 	
-	### trim the pdb with bio3d
-	pdb1 = bio3d::read.pdb( ff1 )
-	pdb2 = bio3d::read.pdb( pdb2_file )
-	# get start and stop indices (for structure from database)
-	start1 = meta %>% filter(symbol_nice == gene1) %>% extract2("DomainStart")
-	end1 = meta %>% filter(symbol_nice == gene1) %>% extract2("DomainEnd")
-	start2 = meta %>% filter(symbol_nice == gene2) %>% extract2("DomainStart")
-	end2 = meta %>% filter(symbol_nice == gene2) %>% extract2("DomainEnd")
-	
-	ff1_sub = file.path(tempdir(), paste0(gene1, "_sub", ".pdb", sep = ""))
-	ff2_sub = file.path(tempdir(), paste0(gene2, "_sub", ".pdb", sep = ""))
-	
-	### Trim pdb files
-	is_gene1_from_db = file.exists(af_db_file_from_symbol(gene1))
-	is_gene2_from_db = file.exists(af_db_file_from_symbol(gene2))
-	pdb1_sub = pdb1
-	if(is_gene1_from_db) {
-		domain_annot1_exists = !(is.na(start1) || is.na(end1))
-		if(domain_annot1_exists) {
-			pdb1_sub = trim.pdb(pdb1, inds = atom.select(pdb1, resno = start1:end1))
+	dat_file1 = ff1
+	dat_file2 = pdb2_file
+	if(domain_only) {
+		### trim the pdb with bio3d
+		pdb1 = bio3d::read.pdb( ff1 )
+		pdb2 = bio3d::read.pdb( pdb2_file )
+		# get start and stop indices (for structure from database)
+		start1 = meta %>% filter(symbol_nice == gene1) %>% extract2("DomainStart")
+		end1 = meta %>% filter(symbol_nice == gene1) %>% extract2("DomainEnd")
+		start2 = meta %>% filter(symbol_nice == gene2) %>% extract2("DomainStart")
+		end2 = meta %>% filter(symbol_nice == gene2) %>% extract2("DomainEnd")
+		
+		ff1_sub = file.path(tempdir(), paste0(gene1, "_sub", ".pdb", sep = ""))
+		ff2_sub = file.path(tempdir(), paste0(gene2, "_sub", ".pdb", sep = ""))
+		
+		### Trim pdb files
+		is_gene1_from_db = file.exists(af_db_file_from_symbol(gene1))
+		is_gene2_from_db = file.exists(af_db_file_from_symbol(gene2))
+		pdb1_sub = pdb1
+		if(is_gene1_from_db) {
+			domain_annot1_exists = !(is.na(start1) || is.na(end1))
+			if(domain_annot1_exists) {
+				pdb1_sub = trim.pdb(pdb1, inds = atom.select(pdb1, resno = start1:end1))
+			}
 		}
-	}
-	pdb2_sub = pdb2
-	if(is_gene2_from_db) {
-		domain_annot2_exists = !(is.na(start2) || is.na(end2))
-		if(domain_annot2_exists) {
-			pdb2_sub = trim.pdb(pdb2, inds = atom.select(pdb2, resno = start2:end2))
+		pdb2_sub = pdb2
+		if(is_gene2_from_db) {
+			domain_annot2_exists = !(is.na(start2) || is.na(end2))
+			if(domain_annot2_exists) {
+				pdb2_sub = trim.pdb(pdb2, inds = atom.select(pdb2, resno = start2:end2))
+			}
 		}
+		bio3d::write.pdb(pdb1_sub, file = ff1_sub)
+		bio3d::write.pdb(pdb2_sub, file = ff2_sub)
+		dat_file1 = ff1_sub
+		dat_file2 = ff2_sub
 	}
-	bio3d::write.pdb(pdb1_sub, file = ff1_sub)
-	bio3d::write.pdb(pdb2_sub, file = ff2_sub)
-	
 	r3dmol() %>%
-		m_add_model(data = ff1_sub) %>%
+		m_add_model(data = dat_file1) %>%
 		m_set_style(style = m_style_cartoon(color = color1)) %>%
 		m_zoom_to() %>%
-		m_add_model(data = ff2_sub) %>%
+		m_add_model(data = dat_file2) %>%
 		m_set_style(
 			sel = m_sel(model = -1),
 			style = m_style_cartoon(color = color2)
