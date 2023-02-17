@@ -72,19 +72,22 @@ align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "yellow", do
 	pdb2 = Rpdb::read.pdb( pdb2_file )
 	
 	### rotate and translate pdb
-	pdb1_rot = pdb1 %>% Rz(tmp_df$z_angle) %>%  Ry(tmp_df$y_angle) %>% Rx(tmp_df$x_angle)  %>% Txyz(x = tmp_df$xt, y = tmp_df$yt, z = tmp_df$zt)
+	#pdb1_rot = pdb1 %>% Rz(tmp_df$z_angle) %>%  Ry(tmp_df$y_angle) %>% Rx(tmp_df$x_angle)  %>% Txyz(x = tmp_df$xt, y = tmp_df$yt, z = tmp_df$zt)
+	pdb2_rot = pdb2 %>%  Txyz(x = -tmp_df$xt, y = -tmp_df$yt, z = -tmp_df$zt) %>% Rx(-tmp_df$x_angle) %>%  Ry(-tmp_df$y_angle) %>% Rz(-tmp_df$z_angle)
 	
 	### write temporary file
 	ff1 = file.path(tempdir(), paste0(gene1, ".pdb", sep = ""))
 	ff2 = file.path(tempdir(), paste0(gene2, ".pdb", sep = ""))
-	Rpdb::write.pdb(pdb1_rot, file = ff1)
+	#Rpdb::write.pdb(pdb1_rot, file = ff1)
+	Rpdb::write.pdb(pdb1, file = ff1)
+	Rpdb::write.pdb(pdb2_rot, file = ff2)
 	
 	dat_file1 = ff1
-	dat_file2 = pdb2_file
+	dat_file2 = ff2
 	if(domain_only) {
 		### trim the pdb with bio3d
 		pdb1 = bio3d::read.pdb( ff1 )
-		pdb2 = bio3d::read.pdb( pdb2_file )
+		pdb2 = bio3d::read.pdb( ff2 )
 		# get start and stop indices (for structure from database)
 		start1 = meta %>% filter(symbol_nice == gene1) %>% extract2("DomainStart")
 		end1 = meta %>% filter(symbol_nice == gene1) %>% extract2("DomainEnd")
