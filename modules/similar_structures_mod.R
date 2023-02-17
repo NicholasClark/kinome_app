@@ -20,6 +20,7 @@ mod_similar_structures_server <- function(input, output, session) {
   #### get similar kinases -----------------------
   most_similar_full = reactive({
     tmp = quo(input$kinase_align1)
+    print(eval(tmp))
     tm_max_data() %>% dplyr::select(row_names, !!tmp) %>% dplyr::rename(TM_max = eval(tmp), symbol = row_names) %>% dplyr::filter(symbol != eval(tmp)) %>% dplyr::arrange(desc(TM_max))
   })
   
