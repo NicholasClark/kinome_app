@@ -3,7 +3,7 @@ mod_similar_structures_ui <- function(id) {
   fluidPage(
     ### Dropdown boxes for alignment
     selectInput(ns("kinase_align1"), label = "Kinase 1", choices = meta$symbol_nice, selected = "ABL1"),
-    selectInput(ns("kinase_align2"), label = "Kinase 2", choices = meta$symbol_nice, selected = "AKT1"),
+    selectInput(ns("kinase_align2"), label = "Kinase 2", choices = c("", meta$symbol_nice), selected = ""),
     checkboxInput(ns("kinase_domain_only"), label = "Show kinase domain only", value = TRUE),
     ### 3d alignment visualization
     r3dmolOutput(ns("align_3d")),
@@ -21,7 +21,8 @@ mod_similar_structures_server <- function(input, output, session) {
   most_similar_full = reactive({
     tmp = quo(input$kinase_align1)
     print(eval(tmp))
-    tm_max_data() %>% dplyr::select(row_names, !!tmp) %>% dplyr::rename(TM_max = eval(tmp), symbol = row_names) %>% dplyr::filter(symbol != eval(tmp)) %>% dplyr::arrange(desc(TM_max))
+    tm_max_data() %>% dplyr::select(row_names, !!tmp) %>% dplyr::rename(TM_max = eval(tmp), symbol = row_names) %>% dplyr::filter(symbol != eval(tmp)) %>% dplyr::arrange(desc(TM_max)) %>%
+    	mutate(TM_max = round(TM_max, 2))
   })
   
   #### Text outputs for most similar kinases ------------
@@ -40,7 +41,7 @@ mod_similar_structures_server <- function(input, output, session) {
     #print(tmp_text)
     #paste0("Most similar kinases to ", input$kinase_align1, ": ", tmp_text, collapse = "")
   })
-  output$similar_dt = renderDataTable(most_similar_full() %>% head())
+  output$similar_dt = renderDataTable(most_similar_full() %>% head(100))
   
   output$ui_text = renderUI({
     HTML(paste(similar_text1(), similar_text2(), sep = '<br/>'))
