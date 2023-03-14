@@ -2,7 +2,7 @@ mod_similar_structures_ui <- function(id) {
   ns <- NS(id)
   fluidPage(
     ### Dropdown boxes for alignment
-    selectInput(ns("kinase_align1"), label = "Kinase 1", choices = meta$symbol_nice, selected = "ABL1"),
+    selectInput(ns("kinase_align1"), label = "Kinase 1", choices = c("", meta$symbol_nice), selected = "ABL1"),
     selectInput(ns("kinase_align2"), label = "Kinase 2", choices = c("", meta$symbol_nice), selected = ""),
     checkboxInput(ns("kinase_domain_only"), label = "Show kinase domain only", value = TRUE),
     ### 3d alignment visualization

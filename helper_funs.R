@@ -136,7 +136,7 @@ align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "yellow", do
 		}
 		obj = r3dmol() %>%
 			m_add_model(data = dat_file) %>%
-			m_set_style(style = m_style_cartoon(color = color1)) %>%
+			m_set_style(style = m_style_cartoon(color = color2)) %>%
 			m_zoom_to()
 		return(obj)
 	} else {
