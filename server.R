@@ -10,6 +10,6 @@ server <- function(input, output, session) {
 	callModule(mod_similar_structures_server, id = "similar1")
 	
 	### Heatmap output
-	makeInteractiveComplexHeatmap(input, output, session, Heatmap(tm_max_mat[1:20,1:20]) %>% draw(), "heatmap")
+	makeInteractiveComplexHeatmap(input, output, session, Heatmap(tm_max_mat) %>% draw(), "heatmap")
 	
 }

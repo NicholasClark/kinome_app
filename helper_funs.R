@@ -1,5 +1,11 @@
 #### Helper functions
 
+### helper function to load metadata
+### (included so we don't have to update the file path in multiple places when we change it)
+load_metadata = function() {
+	read_parquet("data/kinase_meta_updated_2023_update.parquet")
+}
+
 ### Convert uniprot names to symbols ("nice" versions w/ residue numbers)
 # input: uniprot_name_nice
 # output: symbol_nice

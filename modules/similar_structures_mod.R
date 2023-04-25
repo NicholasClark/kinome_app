@@ -41,7 +41,7 @@ mod_similar_structures_server <- function(input, output, session) {
     #print(tmp_text)
     #paste0("Most similar kinases to ", input$kinase_align1, ": ", tmp_text, collapse = "")
   })
-  output$similar_dt = renderDataTable(most_similar_full() %>% head(100))
+  output$similar_dt = renderDataTable(most_similar_full(), options = list(pageLength = 10))
   
   output$ui_text = renderUI({
     HTML(paste(similar_text1(), similar_text2(), sep = '<br/>'))

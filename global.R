@@ -20,4 +20,6 @@ source("load_and_process_data.R", local = TRUE)
 source("modules/similar_structures_mod.R", local = TRUE)
 
 tm_df = read_parquet("data/TM_data_full.parquet")
-meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
+#meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
+#meta = read_parquet("data/kinase_meta_updated_2023_update.parquet")
+meta = load_metadata()
