@@ -18,6 +18,8 @@ source("helper_funs.R", local = TRUE)
 source("load_and_process_data.R", local = TRUE)
 ### Load module for 3d alignment/visualization and similar structure lookup
 source("modules/similar_structures_mod.R", local = TRUE)
+### prep the heatmap
+source("prep_heatmap.R", local = TRUE)
 
 tm_df = read_parquet("data/TM_data_full.parquet")
 #meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
