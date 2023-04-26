@@ -3,6 +3,7 @@
 
 server <- function(input, output, session) {
 	
+	rv = reactiveValues(hm = NULL, breaks = NULL)
 	#### TM-max matrix/data table output
 	output$tm_max_dt = renderDataTable(tm_max_data())
 	
@@ -10,6 +11,11 @@ server <- function(input, output, session) {
 	callModule(mod_similar_structures_server, id = "similar1")
 	
 	### Heatmap output
-	makeInteractiveComplexHeatmap(input, output, session, ht_int %>% draw(), "heatmap")
+	#callModule(mod_prep_heatmap_server, id = "heatmap")
+	heatmap_server("heatmap", rv = rv)
+	
+	observe({
+		makeInteractiveComplexHeatmap(input, output, session, rv$hm() %>% draw(), "heatmap_int")
+	})
 	
 }

@@ -71,3 +71,11 @@ ht_int = Heatmap(mat,
 				 	col = col_fun
 				 )
 )
+
+### for testing
+# ht_int = Heatmap(mat[1:20,1:20], 
+# 				 heatmap_legend_param = list(
+# 				 	title = "TM-score", at = seq(0, 1, 0.2),
+# 				 	col = col_fun
+# 				 )
+# )
