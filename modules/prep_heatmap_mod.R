@@ -71,82 +71,45 @@ heatmap_server = function(id, parent, rv) {
 		
 		#col_fun = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red"))
 		
-		observeEvent(input$apply_breaks, {
-			print("heatmap_breaks")
-			#print(input[["heatmap_breaks"]])
-			print(input$heatmap_breaks)
+		make_heatmap = function() {
+			print("make heatmap")
 			final_breaks = c(input$heatmap_breaks, 1)
-			print(final_breaks)
 			#col_fun = colorRamp2(c(0.5, 0.75, 1), c("blue", "white", "red"))
 			col_fun = colorRamp2(final_breaks, c("blue", "white", "red"))
 			colmap = ColorMapping(col_fun = col_fun)
 			rv$hm = reactive({
-				# ht_int = Heatmap(mat,
-				# 				 left_annotation = ha_row,
-				# 				 top_annotation = ha_col,
-				# 				 show_row_names = F, show_column_names = F,
-				# 				 #clustering_method_columns = cm, clustering_method_rows = cm,
-				# 				 #clustering_distance_columns = cd, clustering_distance_rows = cd,
-				# 				 cluster_rows = col_dend, cluster_columns = col_dend,
-				# 				 #heatmap_height = size, heatmap_width = size,
-				# 				 heatmap_legend_param = list(
-				# 				 	title = "TM-score", at = seq(0, 1, 0.2),
-				# 				 	col = col_fun
-				# 				 )
-				# )
-				## heatmap for testing
-				ht_int = Heatmap(mat[1:20,1:20],
-						heatmap_legend_param = list(
-							title = "TM-score", at = seq(0, 1, 0.2),
-							col = col_fun
-						))
-				ht_int@matrix_color_mapping = colmap
-				ht_int
-			})
-			
-			rv$breaks = input$heatmap_breaks
-		}, ignoreInit = TRUE, ignoreNULL = TRUE)
-		
-		observeEvent(input$heatmap_breaks, {
-			print("heatmap_breaks first time")
-			#print(input[["heatmap_breaks"]])
-			print(input$heatmap_breaks)
-			final_breaks = c(input$heatmap_breaks, 1)
-			print(final_breaks)
-			#col_fun = colorRamp2(c(0.5, 0.75, 1), c("blue", "white", "red"))
-			col_fun = colorRamp2(final_breaks, c("blue", "white", "red"))
-			colmap = ColorMapping(col_fun = col_fun)
-			rv$hm = reactive({
-				# ht_int = Heatmap(mat,
-				# 				 left_annotation = ha_row,
-				# 				 top_annotation = ha_col,
-				# 				 show_row_names = F, show_column_names = F,
-				# 				 #clustering_method_columns = cm, clustering_method_rows = cm,
-				# 				 #clustering_distance_columns = cd, clustering_distance_rows = cd,
-				# 				 cluster_rows = col_dend, cluster_columns = col_dend,
-				# 				 #heatmap_height = size, heatmap_width = size,
-				# 				 heatmap_legend_param = list(
-				# 				 	title = "TM-score", at = seq(0, 1, 0.2),
-				# 				 	col = col_fun
-				# 				 )
-				# )
-				## heatmap for testing
-				ht_int = Heatmap(mat[1:20,1:20],
+				ht_int = Heatmap(mat,
+								 left_annotation = ha_row,
+								 top_annotation = ha_col,
+								 show_row_names = F, show_column_names = F,
+								 #clustering_method_columns = cm, clustering_method_rows = cm,
+								 #clustering_distance_columns = cd, clustering_distance_rows = cd,
+								 cluster_rows = col_dend, cluster_columns = col_dend,
+								 #heatmap_height = size, heatmap_width = size,
 								 heatmap_legend_param = list(
 								 	title = "TM-score", at = seq(0, 1, 0.2),
 								 	col = col_fun
-								 ))
+								 )
+				)
+				## heatmap for testing
+				# ht_int = Heatmap(mat[1:20,1:20],
+				# 				 heatmap_legend_param = list(
+				# 				 	title = "TM-score", at = seq(0, 1, 0.2),
+				# 				 	col = col_fun
+				# 				 ))
 				ht_int@matrix_color_mapping = colmap
 				ht_int
 			})
-			
 			rv$breaks = input$heatmap_breaks
+			return(NULL)
+		}
+		
+		observeEvent(input$apply_breaks, {
+			make_heatmap()
+		}, ignoreInit = TRUE, ignoreNULL = TRUE)
+		observeEvent(input$heatmap_breaks, {
+			make_heatmap()
 		}, once = TRUE)
-		
-		
-		
-
-		
 		
 	})
 }
