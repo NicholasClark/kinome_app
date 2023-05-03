@@ -14,12 +14,26 @@ convert_uniprot_to_symbol_nice = function(uniprot) {
 	meta$symbol_nice[ match(uniprot, meta$uniprot_name_nice) ]
 }
 
-### Get uniprot name from symbol
+### Get (nice) uniprot name from (nice) symbol
 # input: symbol_nice
 # output: uniprot_name_nice
-get_uniprot_name_nice_from_symbol = function(symbol) {
+get_uniprot_name_nice_from_symbol_nice = function(symbol_nice) {
 	#meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
-	uni = meta$uniprot_name_nice[which(meta$symbol_nice == symbol)]
+	uni = meta$uniprot_name_nice[which(meta$symbol_nice == symbol_nice)]
+	return(uni)
+}
+
+get_symbol_from_symbol_nice = function(symbol_nice) {
+	### remove underscore and numbers notating the domain start/end
+	gsub("_.*", "", symbol_nice)
+}
+
+### Get uniprot name from (nice) symbol
+# input: symbol_nice
+# output: uniprot_name
+get_uniprot_name_from_symbol_nice = function(symbol_nice) {
+	#meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
+	uni = meta$uniprot_name[which(meta$symbol_nice == symbol_nice)]
 	return(uni)
 }
 
@@ -30,31 +44,38 @@ get_uniprot_id_from_symbol = function(symbol) {
 }
 
 ### look up filename from symbol -- for files from AF2 database
-af_db_file_from_symbol = function(symbol) {
+af_db_file_from_symbol_nice = function(symbol_nice) {
 	dir = file.path("data", "protein_structures", "AlphaFold", "full_proteins", "v4")
-	id = meta$`Uniprot Entry`[which(meta$HGNC_Symbol == symbol)]
-	file = paste0("AF-", id, "-F1-model_v4.pdb", sep = "")
+	#id = meta$`Uniprot Entry`[which(meta$HGNC_Symbol == symbol)]
+	id = meta$`Uniprot Entry`[which(meta$symbol_nice == symbol_nice)]
+	file = paste0("AF-", id[1], "-F1-model_v4.pdb", sep = "")
 	full_file = file.path(dir, file)
 	return(full_file)
 }
 
-### look up filename from symbol -- for files manually generated from AF2
+### look up filename from (nice) symbol -- for files manually generated from AF2
 # input: symbol_nice
 # output: pdb file name (manually generated files)
-af_manual_file_from_symbol = function(symbol) {
+af_manual_file_from_symbol_nice = function(symbol_nice) {
 	dir = file.path("data", "protein_structures", "AlphaFold", "kinase_domains")
-	uni = get_uniprot_name_nice_from_symbol(symbol)
+	uni = get_uniprot_name_from_symbol_nice(symbol_nice)
 	file = paste0(uni, ".pdb", sep = "")
 	full_file = file.path(dir, file)
 	return(full_file)
 }
 
-af_file_from_symbol = function(symbol) {
-	file_db = af_db_file_from_symbol(symbol)
-	file_manual = af_manual_file_from_symbol(symbol)
+af_file_from_symbol = function(symbol_nice) {
+	#symbol = get_symbol_from_symbol_nice(symbol_nice)
+	#print(symbol)
+	file_db = af_db_file_from_symbol_nice(symbol_nice)
+	print(file_db)
+	file_manual = af_manual_file_from_symbol_nice(symbol_nice)
+	print(file_manual)
 	if(file.exists(file_db)) {
+		print("file_db")
 		return(file_db)
 	} else if(file.exists(file_manual)) {
+		print("file_manual")
 		return(file_manual)
 	} else {
 		stop("File not found")
@@ -64,7 +85,10 @@ af_file_from_symbol = function(symbol) {
 ### read a pdb and trim it to just the kinase domain -- write to new pdb file
 ### return the filename of the trimmed pdb
 read_and_trim_pdb = function(pdb_file, gene1) {
+	print("read_and_trim_pdb")
+	print(pdb_file)
 	pdb1 = Rpdb::read.pdb( pdb_file )
+	print("pdb_file read")
 	ff1 = file.path(tempdir(), paste0(gene1, ".pdb", sep = ""))
 	Rpdb::write.pdb(pdb1, file = ff1)
 	dat_file1 = ff1
@@ -77,13 +101,16 @@ read_and_trim_pdb = function(pdb_file, gene1) {
 	ff1_sub = file.path(tempdir(), paste0(gene1, "_sub", ".pdb", sep = ""))
 	
 	### Trim pdb files
-	is_gene1_from_db = file.exists(af_db_file_from_symbol(gene1))
+	#print(af_db_file_from_symbol(gene1))
+	is_gene1_from_db = file.exists(af_db_file_from_symbol_nice(gene1))
 	pdb1_sub = pdb1
 	if(is_gene1_from_db) {
 		domain_annot1_exists = !(is.na(start1) || is.na(end1))
 		if(domain_annot1_exists) {
 			pdb1_sub = trim.pdb(pdb1, inds = atom.select(pdb1, resno = start1:end1))
 		}
+	} else {
+		### get manually generated pdb
 	}
 	bio3d::write.pdb(pdb1_sub, file = ff1_sub)
 	dat_file1 = ff1_sub
