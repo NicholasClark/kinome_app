@@ -6,7 +6,12 @@ mod_prep_heatmap_ui <- function(id) {
 		sliderInput(ns("heatmap_breaks"), label = h3("Heatmap color breaks"), min = 0, 
 					max = 1, value = c(0.5, 0.75)),
 		actionButton(ns("apply_breaks"), label = "Apply color breaks"),
-		selectInput(ns("distance_metric"), label = "Distance metric", choices = list(`Correlation Coefficient`= "corr_coef", `Euclidean distance` = "euclidean"), selected = "euclidean")
+		selectInput(ns("distance_metric"), label = "Distance metric", choices = list(`Correlation Coefficient`= "corr_coef", `Euclidean distance` = "corr_coef"), selected = "euclidean"),
+		selectInput(ns("kinase_family"), label = "Kinase family",
+		            choices = c("All families","AGC", "AKG", "CAMK", "CK1", "CMGC",
+		                        "Other", "RGC", "STE", "TK", "TKL", "Unknown"),
+		            selected = c("AGC")
+		            )
 	)
 }
 
@@ -27,44 +32,61 @@ heatmap_server = function(id, parent, rv) {
 		#library(seriation)
 		
 		mat = tm_max_mat
-		annot_df = meta %>%
-			select(Group, Fold_Annotation, is_curated) %>%
-			as.data.frame()
-		cm = "average"
-		size = unit(10, "inches")
-		#cd = "pearson"
-		#cd = "euclidean"
-		col1 = c("#ee5680",
-				 "#d9906a",
-				 "#df7e39",
-				 "#d0bf3a",
-				 "#b2bd6c",
-				 "#7dca54",
-				 "#64cf9e",
-				 "#6ab3e1",
-				 "#9d80e8",
-				 "#d980cd",
-				 "#dd82a2")
-		names(col1) = meta$Group %>% unique() %>% sort()
-		col2 = c("#A3A4D1",
-				 "#8DD3D3",
-				 "#E5BAC7",
-				 "#FECE88",
-				 "#D0E288")
-		names(col2) = meta$Fold_Annotation %>% na.omit() %>% unique() %>% sort()
-		#col2 = factor(col2, levels = col2[c(3,2,1,5,4)])
-		#col2 = col2[c(3,2,1,5,4)]
-		
-		col3 = c("black","gray75")
-		names(col3) = c("TRUE", "FALSE")
-		
-		ha_row = rowAnnotation(df = annot_df, col = list(Group = col1, Fold_Annotation = col2, is_curated = col3))
-		ha_col = columnAnnotation(df = annot_df, col = list(Group = col1, Fold_Annotation = col2, is_curated = col3), show_legend = F) 
-		
-		
 		
 		make_heatmap = function() {
 			print("make heatmap")
+		  
+		  
+		  annot_df = meta %>%
+		    select(Group, Fold_Annotation, is_curated) %>%
+		    as.data.frame()
+		  cm = "average"
+		  size = unit(10, "inches")
+		  #cd = "pearson"
+		  #cd = "euclidean"
+		  
+	    col1 = c("#ee5680",
+	             "#d9906a",
+	             "#df7e39",
+	             "#d0bf3a",
+	             "#b2bd6c",
+	             "#7dca54",
+	             "#64cf9e",
+	             "#6ab3e1",
+	             "#9d80e8",
+	             "#d980cd",
+	             "#dd82a2")
+	    names(col1) = meta$Group %>% unique() %>% sort()
+	    # AGC       AKG      CAMK       CK1      CMGC     Other       RGC       STE 
+	    # "#ee5680" "#d9906a" "#df7e39" "#d0bf3a" "#b2bd6c" "#7dca54" "#64cf9e" "#6ab3e1" 
+	    # TK       TKL   Unknown 
+	    # "#9d80e8" "#d980cd" "#dd82a2" 
+	    col2 = c("#A3A4D1",
+	             "#8DD3D3",
+	             "#E5BAC7",
+	             "#FECE88",
+	             "#D0E288")
+	    names(col2) = meta$Fold_Annotation %>% na.omit() %>% unique() %>% sort()
+	    # Atypical    Eukaryotic Like Kinase (eLK) Eukaryotic Protein Kinase (ePK) 
+	    # "#A3A4D1"                       "#8DD3D3"                       "#E5BAC7" 
+	    # Unknown     Unrelated to Protein Kinase 
+	    # "#FECE88"                       "#D0E288" 
+	    #col2 = factor(col2, levels = col2[c(3,2,1,5,4)])
+	    #col2 = col2[c(3,2,1,5,4)]
+	    col3 = c("black","gray75")
+	    names(col3) = c("TRUE", "FALSE")
+		  if(input$kinase_family == "Unknown") {
+		    annot_df = annot_df %>% filter(is.na(Group) | Group == "Unknown")
+		    #annot_df$Group[is.na(annot_df$Group)] = "NA"
+		    
+		  } else {
+		    names(col2) = annot_df$Fold_Annotation %>% na.omit() %>% unique() %>% sort()
+		  }
+		  
+		  
+		  ha_row = rowAnnotation(df = annot_df, col = list(Group = col1, Fold_Annotation = col2, is_curated = col3))
+		  ha_col = columnAnnotation(df = annot_df, col = list(Group = col1, Fold_Annotation = col2, is_curated = col3), show_legend = F)
+		  
 			############ optimal leaf ordering ############
 			
 			#calculate distance matrix
@@ -87,25 +109,33 @@ heatmap_server = function(id, parent, rv) {
 			col_fun = colorRamp2(final_breaks, c("blue", "white", "red"))
 			colmap = ColorMapping(col_fun = col_fun)
 			rv$hm = reactive({
-				ht_int = Heatmap(mat,
-								 left_annotation = ha_row,
-								 top_annotation = ha_col,
-								 show_row_names = F, show_column_names = F,
-								 #clustering_method_columns = cm, clustering_method_rows = cm,
-								 #clustering_distance_columns = cd, clustering_distance_rows = cd,
-								 cluster_rows = col_dend, cluster_columns = col_dend,
-								 #heatmap_height = size, heatmap_width = size,
-								 heatmap_legend_param = list(
-								 	title = "TM-score", at = seq(0, 1, 0.2),
-								 	col = col_fun
-								 )
-				)
-				# heatmap for testing
-				# ht_int = Heatmap(mat[1:50,1:50],
-				# 				 heatmap_legend_param = list(
-				# 				 	title = "TM-score", at = seq(0, 1, 0.2),
-				# 				 	col = col_fun
-				# 				 ))
+			  make_heatmap_full = function() {
+			    Heatmap(mat,
+			            left_annotation = ha_row,
+			            top_annotation = ha_col,
+			            show_row_names = F, show_column_names = F,
+			            #clustering_method_columns = cm, clustering_method_rows = cm,
+			            #clustering_distance_columns = cd, clustering_distance_rows = cd,
+			            cluster_rows = col_dend, cluster_columns = col_dend,
+			            #heatmap_height = size, heatmap_width = size,
+			            heatmap_legend_param = list(
+			              title = "TM-score", at = seq(0, 1, 0.2),
+			              col = col_fun
+			            )
+			    )
+			  }
+			  make_heatmap_test = function() {
+			    ## heatmap for testing
+			    Heatmap(mat[1:50,1:50],
+    				 heatmap_legend_param = list(
+    				 	title = "TM-score", at = seq(0, 1, 0.2),
+    				 	col = col_fun)
+    				 )
+			  }
+			  
+				ht_int = make_heatmap_full()
+				#ht_int = make_heatmap_test()
+				
 				ht_int@matrix_color_mapping = colmap
 				ht_int
 			})
