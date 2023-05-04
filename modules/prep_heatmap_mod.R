@@ -18,7 +18,8 @@ mod_prep_heatmap_ui <- function(id) {
 					choices = list(`Gene symbols` = "gene_symbol",
 								   `Uniprot names` = "uniprot_name"),
 					selected = "gene_symbol"
-					)
+					),
+		checkboxInput(ns("show_row_col_names"), label = "Show row/column names")
 	)
 }
 
@@ -135,7 +136,8 @@ heatmap_server = function(id, parent, rv) {
 			    Heatmap(mat,
 			            left_annotation = ha_row,
 			            top_annotation = ha_col,
-			            show_row_names = F, show_column_names = F,
+			            show_row_names = input$show_row_col_names,
+			    		show_column_names = input$show_row_col_names,
 			            #clustering_method_columns = cm, clustering_method_rows = cm,
 			            #clustering_distance_columns = cd, clustering_distance_rows = cd,
 			            cluster_rows = col_dend, cluster_columns = col_dend,
@@ -166,11 +168,13 @@ heatmap_server = function(id, parent, rv) {
 		}
 		
 		observeEvent(c(input$apply_breaks, input$distance_metric, 
-					   input$kinase_family, input$matrix_names), {
+					   input$kinase_family, input$matrix_names,
+					   input$show_row_col_names), {
 			make_heatmap()
 		}, ignoreInit = TRUE, ignoreNULL = TRUE)
 		observeEvent(c(input$heatmap_breaks, input$distance_metric,
-					   input$kinase_family, input$matrix_names), {
+					   input$kinase_family, input$matrix_names,
+					   input$show_row_col_names), {
 			make_heatmap()
 		}, once = TRUE)
 		
