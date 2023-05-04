@@ -5,7 +5,8 @@ mod_prep_heatmap_ui <- function(id) {
 	fluidPage(
 		sliderInput(ns("heatmap_breaks"), label = h3("Heatmap color breaks"), min = 0, 
 					max = 1, value = c(0.5, 0.75)),
-		actionButton(ns("apply_breaks"), label = "Apply color breaks")
+		actionButton(ns("apply_breaks"), label = "Apply color breaks"),
+		selectInput(ns("distance_metric"), label = "Distance metric", choices = list(`Correlation Coefficient`= "corr_coef", `Euclidean distance` = "euclidean"), selected = "euclidean")
 	)
 }
 
@@ -31,7 +32,7 @@ heatmap_server = function(id, parent, rv) {
 			as.data.frame()
 		cm = "average"
 		size = unit(10, "inches")
-		cd = "pearson"
+		#cd = "pearson"
 		#cd = "euclidean"
 		col1 = c("#ee5680",
 				 "#d9906a",
@@ -60,19 +61,27 @@ heatmap_server = function(id, parent, rv) {
 		ha_row = rowAnnotation(df = annot_df, col = list(Group = col1, Fold_Annotation = col2, is_curated = col3))
 		ha_col = columnAnnotation(df = annot_df, col = list(Group = col1, Fold_Annotation = col2, is_curated = col3), show_legend = F) 
 		
-		############ optimal leaf ordering ############
 		
-		#calculate distance matrix. default is Euclidean distance
-		dist_mat <- as.dist(1 - cor(t(mat), method = "pearson"))
-		#perform hierarchical clustering. The default is complete linkage.
-		col_hc <- hclust(dist_mat, method = "average")
-		#row_hc <- hclust(t(dist_mat), method = "average")
-		col_dend = dendsort(as.dendrogram(col_hc), type="average")
-		
-		#col_fun = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red"))
 		
 		make_heatmap = function() {
 			print("make heatmap")
+			############ optimal leaf ordering ############
+			
+			#calculate distance matrix
+			rv$distance_metric = input$distance_metric
+			if(input$distance_metric == "euclidean") {
+				dist_mat <- dist(t(mat), method = "euclidean")
+			} else {
+				dist_mat <- as.dist(1 - cor(t(mat), method = "pearson"))
+			}
+			#perform hierarchical clustering. The default is complete linkage.
+			col_hc <- hclust(dist_mat, method = "average")
+			#row_hc <- hclust(t(dist_mat), method = "average")
+			col_dend = dendsort(as.dendrogram(col_hc), type="average")
+			
+			#col_fun = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red"))
+			
+			
 			final_breaks = c(input$heatmap_breaks, 1)
 			#col_fun = colorRamp2(c(0.5, 0.75, 1), c("blue", "white", "red"))
 			col_fun = colorRamp2(final_breaks, c("blue", "white", "red"))
@@ -91,8 +100,8 @@ heatmap_server = function(id, parent, rv) {
 								 	col = col_fun
 								 )
 				)
-				## heatmap for testing
-				# ht_int = Heatmap(mat[1:20,1:20],
+				# heatmap for testing
+				# ht_int = Heatmap(mat[1:50,1:50],
 				# 				 heatmap_legend_param = list(
 				# 				 	title = "TM-score", at = seq(0, 1, 0.2),
 				# 				 	col = col_fun
@@ -104,10 +113,10 @@ heatmap_server = function(id, parent, rv) {
 			return(NULL)
 		}
 		
-		observeEvent(input$apply_breaks, {
+		observeEvent(c(input$apply_breaks, input$distance_metric), {
 			make_heatmap()
 		}, ignoreInit = TRUE, ignoreNULL = TRUE)
-		observeEvent(input$heatmap_breaks, {
+		observeEvent(c(input$heatmap_breaks, input$distance_metric), {
 			make_heatmap()
 		}, once = TRUE)
 		
