@@ -13,7 +13,12 @@ mod_prep_heatmap_ui <- function(id) {
 		                        "Other", "RGC", "STE", "TK", "TKL", "Unknown"),
 		            selected = c("AGC")
 					#selected = "All families"
-		            )
+		            ),
+		selectInput(ns("matrix_names"), label = "Matrix row/column-names",
+					choices = list(`Gene symbols` = "gene_symbol",
+								   `Uniprot names` = "uniprot_name"),
+					selected = "gene_symbol"
+					)
 	)
 }
 
@@ -89,6 +94,12 @@ heatmap_server = function(id, parent, rv) {
 			mat = mat[genes, genes]
 		}
 	    
+	    if(input$matrix_names == "uniprot_name") {
+	    	uni_names = meta$uniprot_name_nice[match(rownames(mat), meta$symbol_nice)]
+	    	rownames(mat) = uni_names
+	    	colnames(mat) = uni_names
+	    }
+	    
 	    #rv$kinase_family = input$kinase_family
 	    
 		annot_df = annot_df %>%
@@ -154,10 +165,12 @@ heatmap_server = function(id, parent, rv) {
 			return(NULL)
 		}
 		
-		observeEvent(c(input$apply_breaks, input$distance_metric, input$kinase_family), {
+		observeEvent(c(input$apply_breaks, input$distance_metric, 
+					   input$kinase_family, input$matrix_names), {
 			make_heatmap()
 		}, ignoreInit = TRUE, ignoreNULL = TRUE)
-		observeEvent(c(input$heatmap_breaks, input$distance_metric, input$kinase_family), {
+		observeEvent(c(input$heatmap_breaks, input$distance_metric,
+					   input$kinase_family, input$matrix_names), {
 			make_heatmap()
 		}, once = TRUE)
 		
