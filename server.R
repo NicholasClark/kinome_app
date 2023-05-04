@@ -3,7 +3,7 @@
 
 server <- function(input, output, session) {
 	
-	rv = reactiveValues(hm = NULL, breaks = NULL, distance_metric = NULL)
+	rv = reactiveValues(hm = NULL)
 	#### TM-max matrix/data table output
 	output$tm_max_dt = renderDataTable(tm_max_data())
 
