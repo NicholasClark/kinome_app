@@ -46,7 +46,7 @@ heatmap_server = function(id, parent, rv) {
 		  
 		  
 		  annot_df = meta %>%
-		    select(Group, Fold_Annotation, is_curated, uniprot_name_nice, symbol_nice) %>%
+		    select(Group, Fold_Annotation, is_curated, uniprot_name_nice, symbol_nice, domain_length) %>%
 		    as.data.frame()
 		  cm = "average"
 		  size = unit(10, "inches")
@@ -83,6 +83,7 @@ heatmap_server = function(id, parent, rv) {
 	    #col2 = col2[c(3,2,1,5,4)]
 	    col3 = c("black","gray75")
 	    names(col3) = c("TRUE", "FALSE")
+	    col4 = c()
 		if(input$kinase_family == "Unknown") {
 			annot_df = annot_df %>% filter(is.na(Group) | Group == "Unknown")
 			annot_df$Group[is.na(annot_df$Group)] = "NA"
@@ -102,11 +103,11 @@ heatmap_server = function(id, parent, rv) {
 	    }
 	    
 	    #rv$kinase_family = input$kinase_family
-	    
+	    print(head(annot_df))
 		annot_df = annot_df %>%
-			select(Group, Fold_Annotation, is_curated) %>%
+			select(Group, Fold_Annotation, is_curated, domain_length) %>%
 			as.data.frame()
-	    
+	    print(head(annot_df))
 		  ha_row = rowAnnotation(df = annot_df, col = list(Group = col1, Fold_Annotation = col2, is_curated = col3))
 		  ha_col = columnAnnotation(df = annot_df, col = list(Group = col1, Fold_Annotation = col2, is_curated = col3), show_legend = F)
 		  

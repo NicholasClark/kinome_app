@@ -21,7 +21,11 @@ mod_similar_structures_server <- function(input, output, session) {
   most_similar_full = reactive({
     tmp = quo(input$kinase_align1)
     print(eval(tmp))
-    tm_max_data() %>% dplyr::select(row_names, !!tmp) %>% dplyr::rename(TM_max = eval(tmp), symbol = row_names) %>% dplyr::filter(symbol != eval(tmp)) %>% dplyr::arrange(desc(TM_max)) %>%
+    
+    meta_join = meta %>% select(symbol_nice, uniprot_name_nice, Group, Fold_Annotation, is_curated)
+    tm_join = tm_max_data() %>% dplyr::select(row_names, !!tmp) %>% dplyr::rename(TM_max = eval(tmp), symbol_nice = row_names)
+    tm_joined = tm_join %>% left_join(meta_join, by = "symbol_nice")
+    tm_joined %>% dplyr::filter(symbol_nice != eval(tmp)) %>% dplyr::arrange(desc(TM_max)) %>%
     	mutate(TM_max = round(TM_max, 2))
   })
   
