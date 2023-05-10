@@ -6,8 +6,8 @@ mod_prep_heatmap_ui <- function(id) {
 		sliderInput(ns("heatmap_breaks"), label = h3("Heatmap color breaks"), min = 0, 
 					max = 1, value = c(0.5, 0.75)),
 		actionButton(ns("apply_breaks"), label = "Apply color breaks"),
-		selectInput(ns("distance_metric"), label = "Distance metric", choices = list(`Correlation Coefficient`= "corr_coef", `Euclidean distance` = "euclidean"),
-					selected = "corr_coef"),
+		selectInput(ns("distance_metric"), label = "Distance metric", choices = list(`One minus TM-score` = "TM_score", `Pearson Correlation`= "pearson", `Spearman Correlation`= "spearman", `Euclidean distance` = "euclidean", `Cluster within groups` = "within_groups"),
+					selected = "TM_score"),
 		selectInput(ns("kinase_family"), label = "Kinase family",
 		            choices = c("All families","AGC", "AKG", "CAMK", "CK1", "CMGC",
 		                        "Other", "RGC", "STE", "TK", "TKL", "Unknown"),
@@ -116,12 +116,25 @@ heatmap_server = function(id, parent, rv) {
 			#calculate distance matrix
 			#rv$distance_metric = input$distance_metric
 			if(input$distance_metric == "euclidean") {
+				## distance = Euclidean distance between two vectors of TM-scores
 				dist_mat <- dist(t(mat), method = "euclidean")
+				#perform hierarchical clustering. The default is average linkage.
+				col_hc <- hclust(dist_mat, method = "average")
+			} else if(input$distance_metric == "TM_score") {
+				## distance = 1 - TM_max(i,j) for domains i and j
+				col_hc <- hclust(as.dist(1-mat), method = "average")
+			} else if(input$distance_metric == "spearman") {
+				## distance = Spearman correlation of two vectors of TM-scores
+				dist_mat <- as.dist(1 - cor(t(mat), method = "spearman"))
+				#perform hierarchical clustering. The default is average linkage.
+				col_hc <- hclust(dist_mat, method = "average")
 			} else {
+				## distance = Pearson correlation of two vectors of TM-scores
 				dist_mat <- as.dist(1 - cor(t(mat), method = "pearson"))
+				#perform hierarchical clustering. The default is average linkage.
+				col_hc <- hclust(dist_mat, method = "average")
 			}
-			#perform hierarchical clustering. The default is complete linkage.
-			col_hc <- hclust(dist_mat, method = "average")
+		  
 			#row_hc <- hclust(t(dist_mat), method = "average")
 			col_dend = dendsort(as.dendrogram(col_hc), type="average")
 			
@@ -132,6 +145,15 @@ heatmap_server = function(id, parent, rv) {
 			#col_fun = colorRamp2(c(0.5, 0.75, 1), c("blue", "white", "red"))
 			col_fun = colorRamp2(final_breaks, c("blue", "white", "red"))
 			colmap = ColorMapping(col_fun = col_fun)
+			
+			if(input$distance_metric == "within_groups") {
+				if(input$kinase_family == "All families") {
+					tmp_annot = annot_df$Group
+					tmp_annot[is.na(tmp_annot)] = "NA"
+					col_dend = cluster_within_group(mat, factor(tmp_annot))
+				}
+			}
+			
 			rv$hm = reactive({
 			  make_heatmap_full = function() {
 			    Heatmap(mat,
