@@ -143,7 +143,7 @@ read_and_rotate_pdb = function(gene1, gene2, trim = FALSE) {
 }
 
 
-align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "yellow", domain_only = F) {
+align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "yellow", domain_only = F, text = "", show_text = TRUE) {
 	### If no second gene, just display the first one
 	if(gene1 == "" && gene2 == "") {
 		obj = r3dmol()
@@ -193,6 +193,17 @@ align_kinases = function(gene1, gene2, color1 = "#00cc96", color2 = "yellow", do
 				style = m_style_cartoon(color = color2)
 			) %>%
  			m_zoom_to()
+		if(show_text) {
+			obj = obj %>% 
+			m_add_label(text = text,
+						sel = m_sel(resi = 1),
+						style = m_style_label(
+							backgroundColor = "#666666",
+							backgroundOpacity = 0.9,
+							alignment = "topLeft"
+						)
+						)
+		}
 		return(obj)
  	}
 # 	
