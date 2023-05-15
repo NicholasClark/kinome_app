@@ -23,7 +23,7 @@ source("modules/similar_structures_mod.R", local = TRUE)
 ### Load module for heatmap
 source("modules/prep_heatmap_mod.R", local = TRUE)
 
-tm_df = read_parquet("data/TM_data_full.parquet")
+tm_df = read_parquet("data/TM_data_long.parquet")
 #meta = read_csv("data/kinase_meta_updated_2023_01_03.csv")
 #meta = read_parquet("data/kinase_meta_updated_2023_update.parquet")
 meta = load_metadata()
